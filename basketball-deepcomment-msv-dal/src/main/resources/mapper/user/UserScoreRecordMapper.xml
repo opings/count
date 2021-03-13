@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hupu.deep.comment.dal.invertIndex.UserScoreRecordMapper">
+  <resultMap id="BaseResultMap" type="com.hupu.deep.comment.entity.ScoreRecordDO">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="subject_id" jdbcType="VARCHAR" property="subjectId" />
+    <result column="score_record_id" jdbcType="VARCHAR" property="scoreRecordId" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="score" jdbcType="INTEGER" property="score" />
+    <result column="create_date" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="update_date" jdbcType="TIMESTAMP" property="updateDate" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, subject_id, score_record_id, user_id, score, create_date, update_date
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from user_score_record
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from user_score_record
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.hupu.deep.comment.entity.ScoreRecordDO">
+    insert into user_score_record (id, subject_id, score_record_id, 
+      user_id, score, create_date, 
+      update_date)
+    values (#{id,jdbcType=BIGINT}, #{subjectId,jdbcType=VARCHAR}, #{scoreRecordId,jdbcType=VARCHAR}, 
+      #{userId,jdbcType=BIGINT}, #{score,jdbcType=INTEGER}, #{createDate,jdbcType=TIMESTAMP}, 
+      #{updateDate,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.hupu.deep.comment.entity.ScoreRecordDO">
+    insert into user_score_record
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="subjectId != null">
+        subject_id,
+      </if>
+      <if test="scoreRecordId != null">
+        score_record_id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="score != null">
+        score,
+      </if>
+      <if test="createDate != null">
+        create_date,
+      </if>
+      <if test="updateDate != null">
+        update_date,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="subjectId != null">
+        #{subjectId,jdbcType=VARCHAR},
+      </if>
+      <if test="scoreRecordId != null">
+        #{scoreRecordId,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="score != null">
+        #{score,jdbcType=INTEGER},
+      </if>
+      <if test="createDate != null">
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null">
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.hupu.deep.comment.entity.ScoreRecordDO">
+    update user_score_record
+    <set>
+      <if test="subjectId != null">
+        subject_id = #{subjectId,jdbcType=VARCHAR},
+      </if>
+      <if test="scoreRecordId != null">
+        score_record_id = #{scoreRecordId,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="score != null">
+        score = #{score,jdbcType=INTEGER},
+      </if>
+      <if test="createDate != null">
+        create_date = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDate != null">
+        update_date = #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.hupu.deep.comment.entity.ScoreRecordDO">
+    update user_score_record
+    set subject_id = #{subjectId,jdbcType=VARCHAR},
+      score_record_id = #{scoreRecordId,jdbcType=VARCHAR},
+      user_id = #{userId,jdbcType=BIGINT},
+      score = #{score,jdbcType=INTEGER},
+      create_date = #{createDate,jdbcType=TIMESTAMP},
+      update_date = #{updateDate,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+
+  <select id="getScoreRecord" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from user_score_record
+    where user_id = #{userId,jdbcType=BIGINT}
+    and subject_id = #{subjectId,jdbcType=VARCHAR}
+  </select>
+
+  <select id="getSingleUserScoreRecordList" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from user_score_record
+    where user_id = #{userId,jdbcType=BIGINT}
+    and subject_id in
+    <foreach collection="subjectIds" item="subjectId" index="index" open="(" close=")" separator=",">
+      #{subjectId,jdbcType=VARCHAR}
+    </foreach>
+  </select>
+
+  <select id="getMultipleUserScoreRecordList" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from user_score_record
+    where user_id in
+    <foreach collection="userIds" item="userId" index="index" open="(" close=")" separator=",">
+      #{userId,jdbcType=BIGINT}
+    </foreach>
+    and subject_id = #{subjectId,jdbcType=VARCHAR}
+  </select>
+
+  <select id="getScoreRecordForUpdate" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    from user_score_record
+    where user_id = #{userId,jdbcType=BIGINT}
+    and subject_id = #{subjectId,jdbcType=VARCHAR}
+    for update
+  </select>
+
+  <insert id="saveScoreRecord" parameterType="com.hupu.deep.comment.entity.LightRecordDO">
+        insert into user_score_record (subject_id,
+        score_record_id, user_id, score)
+        values (
+          #{subjectId,jdbcType=VARCHAR},
+          #{scoreRecordId,jdbcType=VARCHAR},
+          #{userId,jdbcType=BIGINT},
+          #{score,jdbcType=INTEGER}
+        )
+    </insert>
+
+  <update id="updateScoreRecord">
+        update user_score_record
+        set score = #{score,jdbcType=INTEGER}
+        where user_id = #{userId,jdbcType=BIGINT}
+        and subject_id = #{subjectId,jdbcType=VARCHAR}
+    </update>
+
+</mapper>

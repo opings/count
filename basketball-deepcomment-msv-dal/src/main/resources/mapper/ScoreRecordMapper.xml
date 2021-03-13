@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hupu.deep.comment.dal.ScoreRecordMapper">
+    <resultMap id="BaseResultMap" type="com.hupu.deep.comment.entity.ScoreRecordDO">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="subject_id" jdbcType="VARCHAR" property="subjectId"/>
+        <result column="score_record_id" jdbcType="VARCHAR" property="scoreRecordId"/>
+        <result column="user_id" jdbcType="BIGINT" property="userId"/>
+        <result column="score" jdbcType="INTEGER" property="score"/>
+        <result column="create_date" jdbcType="TIMESTAMP" property="createDate"/>
+        <result column="update_date" jdbcType="TIMESTAMP" property="updateDate"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, subject_id, score_record_id, user_id, score, create_date, update_date
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from score_record
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <select id="selectByScoreRecordId" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from score_record
+        where score_record_id = #{scoreRecordId,jdbcType=VARCHAR}
+    </select>
+    <insert id="insert" parameterType="com.hupu.deep.comment.entity.ScoreRecordDO">
+        insert into score_record (id, subject_id, score_record_id,
+                                  user_id, score, create_date,
+                                  update_date)
+        values (#{id,jdbcType=BIGINT}, #{subjectId,jdbcType=VARCHAR}, #{scoreRecordId,jdbcType=VARCHAR},
+                #{userId,jdbcType=BIGINT}, #{score,jdbcType=INTEGER}, now(),
+                now())
+    </insert>
+    <update id="updateByScoreRecordIdSelective" parameterType="com.hupu.deep.comment.entity.ScoreRecordDO">
+        update score_record
+        <set>
+            <if test="subjectId != null">
+                subject_id = #{subjectId,jdbcType=VARCHAR},
+            </if>
+            <if test="scoreRecordId != null">
+                score_record_id = #{scoreRecordId,jdbcType=VARCHAR},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="score != null">
+                score = #{score,jdbcType=INTEGER},
+            </if>
+            update_date = now(),
+        </set>
+        where score_record_id = #{scoreRecordId,jdbcType=VARCHAR}
+    </update>
+
+    <select id="getScoreRecord" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from score_record
+        where user_id = #{userId,jdbcType=BIGINT}
+        and subject_id = #{subjectId,jdbcType=VARCHAR}
+    </select>
+
+    <insert id="saveScoreRecord" parameterType="com.hupu.deep.comment.entity.LightRecordDO">
+        insert into score_record (subject_id,
+        score_record_id, user_id, score)
+        values (#{subjectId,jdbcType=VARCHAR},
+        #{scoreRecordId,jdbcType=VARCHAR}, #{userId,jdbcType=BIGINT}, #{score,jdbcType=INTEGER})
+    </insert>
+
+    <update id="updateScoreRecord">
+        update score_record
+        set score = #{score,jdbcType=INTEGER}
+        where user_id = #{userId,jdbcType=BIGINT}
+        and subject_id = #{subjectId,jdbcType=VARCHAR}
+    </update>
+
+</mapper>

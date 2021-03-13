@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hupu.deep.comment.dal.LightSubjectMapper">
+    <resultMap id="BaseResultMap" type="com.hupu.deep.comment.entity.LightSubjectDO">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="subject_id" jdbcType="VARCHAR" property="subjectId"/>
+        <result column="out_biz_type" jdbcType="VARCHAR" property="outBizType"/>
+        <result column="out_biz_no" jdbcType="VARCHAR" property="outBizNo"/>
+        <result column="create_dt" jdbcType="TIMESTAMP" property="createDt"/>
+        <result column="update_dt" jdbcType="TIMESTAMP" property="updateDt"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, out_biz_type,out_biz_no,subject_id, create_dt, update_dt
+    </sql>
+
+    <insert id="insertSelective" parameterType="com.hupu.deep.comment.entity.CommentSubjectDO">
+        insert into light_subject
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="subjectId != null">
+                subject_id,
+            </if>
+            <if test="outBizType != null">
+                out_biz_type,
+            </if>
+            <if test="outBizNo != null">
+                out_biz_no,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="subjectId != null">
+                #{subjectId,jdbcType=VARCHAR},
+            </if>
+            <if test="outBizType != null">
+                #{outBizType,jdbcType=VARCHAR},
+            </if>
+            <if test="outBizNo != null">
+                #{outBizNo,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="selectByOutBizKey" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from light_subject
+        where out_biz_type = #{outBizType,jdbcType=VARCHAR}
+        and out_biz_no = #{outBizNo,jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectBySubjectId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from light_subject
+        where subject_id = #{subjectId,jdbcType=VARCHAR}
+    </select>
+
+</mapper>
+

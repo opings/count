@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hupu.deep.comment.dal.CountRecordMapper">
+    <resultMap id="BaseResultMap" type="com.hupu.deep.comment.entity.CountRecordDO">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="subject_id" jdbcType="VARCHAR" property="subjectId"/>
+        <result column="count_record_id" jdbcType="VARCHAR" property="countRecordId"/>
+        <result column="count_value" jdbcType="INTEGER" property="countValue"/>
+        <result column="idempotent_no" jdbcType="VARCHAR" property="idempotentNo"/>
+        <result column="create_dt" jdbcType="TIMESTAMP" property="createDt"/>
+        <result column="update_dt" jdbcType="TIMESTAMP" property="createDt"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, subject_id, count_record_id, count_value, idempotent_no,
+        create_dt, update_dt
+    </sql>
+
+
+    <insert id="insertSelective" parameterType="com.hupu.deep.comment.entity.CountRecordDO">
+        insert into count_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="subjectId != null">
+                subject_id,
+            </if>
+            <if test="countRecordId != null">
+                count_record_id,
+            </if>
+            <if test="countValue != null">
+                count_value,
+            </if>
+            <if test="idempotentNo != null">
+                idempotent_no,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="subjectId != null">
+                #{subjectId,jdbcType=VARCHAR},
+            </if>
+            <if test="countRecordId != null">
+                #{countRecordId,jdbcType=VARCHAR},
+            </if>
+            <if test="countValue != null">
+                #{countValue,jdbcType=INTEGER},
+            </if>
+            <if test="idempotentNo != null">
+                #{idempotentNo,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="selectByIdempotentNo" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from count_record
+        where subject_id = #{subjectId,jdbcType=VARCHAR}
+        and idempotent_no= #{idempotentNo,jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectListBySubjectId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from count_record
+        where subject_id = #{subjectId,jdbcType=VARCHAR}
+    </select>
+
+
+    <select id="selectByIdempotentNoForUpdate" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from count_record
+        where subject_id = #{subjectId,jdbcType=VARCHAR}
+        and idempotent_no= #{idempotentNo,jdbcType=VARCHAR}
+        for update
+    </select>
+
+    <update id="updateCountValue">
+        update count_record set count_value= #{countValue,jdbcType=INTEGER}
+        where subject_id = #{subjectId,jdbcType=VARCHAR}
+        and idempotent_no= #{idempotentNo,jdbcType=VARCHAR}
+    </update>
+
+
+</mapper>

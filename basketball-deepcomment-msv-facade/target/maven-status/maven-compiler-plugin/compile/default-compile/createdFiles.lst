@@ -1,0 +1,7 @@
+com\hupu\deep\comment\request\CommentInfoByRongcloudMsgIdListRequest.class
+com\hupu\deep\comment\facade\CommentAuditFacade.class
+com\hupu\deep\comment\request\UpdateChatGroupTopicIdRequest.class
+com\hupu\deep\comment\request\UpdateCommentContentExtendRequest.class
+com\hupu\deep\comment\request\CancelRefChatGroupTopicIdRequest.class
+com\hupu\deep\comment\request\CommentListByChatGroupTopicIdRequest.class
+com\hupu\deep\comment\request\UpdateGroupRefRoomMsgRequest.class

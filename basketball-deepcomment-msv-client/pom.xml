@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <artifactId>basketball-deepcomment-msv</artifactId>
+        <groupId>com.hupu.deep.comment</groupId>
+        <version>1.0.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>basketball-deepcomment-msv-client</artifactId>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <redisson.version>3.11.1</redisson.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.hupu.deep.comment</groupId>
+            <artifactId>basketball-deepcomment-msv-util</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.hupu.deep.comment</groupId>
+            <artifactId>basketball-deepcomment-msv-dal</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.hupu.deep.comment</groupId>
+            <artifactId>basketball-deepcomment-msv-facade</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.hupu.deep.comment</groupId>
+            <artifactId>basketball-deepcomment-msv-model</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.aliyun.openservices</groupId>
+            <artifactId>ons-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson</artifactId>
+            <version>${redisson.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.openfeign</groupId>
+            <artifactId>feign-httpclient</artifactId>
+            <version>9.5.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.hupu.basketball</groupId>
+            <artifactId>basketball-marketingcore-msv-facade</artifactId>
+            <version>2020.07.17</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.hupu.basketballlive</groupId>
+            <artifactId>basketball-livecore-msv-facade</artifactId>
+            <version>2020.08.28</version>
+        </dependency>
+        <dependency>
+            <groupId>com.hupu.basketballlive</groupId>
+            <artifactId>basketball-livecore-msv-model</artifactId>
+            <version>2020.08.28</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.hupu.foundation</groupId>
+            <artifactId>foundation-cache</artifactId>
+        </dependency>
+
+    </dependencies>
+
+</project>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hupu.deep.comment.dal.BlackRecordMapper">
+    <resultMap id="BaseResultMap" type="com.hupu.deep.comment.entity.BlackRecordDO">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="user_id" jdbcType="BIGINT" property="userId"/>
+        <result column="subject_id" jdbcType="VARCHAR" property="subjectId"/>
+        <result column="black_record_id" jdbcType="VARCHAR" property="blackRecordId"/>
+        <result column="black_status" jdbcType="VARCHAR" property="blackStatus"/>
+        <result column="create_dt" jdbcType="TIMESTAMP" property="createDt"/>
+        <result column="update_dt" jdbcType="TIMESTAMP" property="createDt"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, subject_id, black_record_id, user_id, black_status, create_dt, update_dt
+    </sql>
+
+    <select id="getBlackRecord" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from black_record
+        where user_id = #{userId,jdbcType=BIGINT}
+        and subject_id = #{subjectId,jdbcType=VARCHAR}
+    </select>
+
+    <insert id="saveBlackRecord" parameterType="com.hupu.deep.comment.entity.BlackRecordDO">
+        insert into black_record (subject_id,
+        black_record_id, user_id, black_status)
+        values (#{subjectId,jdbcType=VARCHAR},
+        #{blackRecordId,jdbcType=VARCHAR}, #{userId,jdbcType=BIGINT}, #{blackStatus,jdbcType=VARCHAR})
+    </insert>
+
+    <update id="black">
+        update black_record
+        set black_status = 'BLACK'
+        where user_id = #{userId,jdbcType=BIGINT}
+        and subject_id = #{subjectId,jdbcType=VARCHAR}
+        and black_status = 'CANCEL_BLACK'
+    </update>
+
+    <update id="cancelBlack" parameterType="com.hupu.deep.comment.entity.BlackRecordDO">
+        update black_record
+        set black_status = 'CANCEL_BLACK'
+        where user_id = #{userId,jdbcType=BIGINT}
+        and subject_id = #{subjectId,jdbcType=VARCHAR}
+        and black_status = 'BLACK'
+    </update>
+
+    <select id="statsContributionCount" resultType="Integer">
+        select count(1) from black_record
+        where subject_id = #{subjectId,jdbcType=VARCHAR}
+        and contribution_count=0
+    </select>
+
+    <update id="doneContributionCount">
+        update black_record set contribution_count=1
+        where subject_id = #{subjectId,jdbcType=VARCHAR}
+        and contribution_count = 0
+    </update>
+
+</mapper>

@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hupu.deep.comment.dal.CommentRecordMapper">
+    <resultMap id="BaseResultMap" type="com.hupu.deep.comment.entity.CommentRecordDO">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="subject_id" jdbcType="VARCHAR" property="subjectId"/>
+        <result column="comment_id" jdbcType="VARCHAR" property="commentId"/>
+        <result column="rongcloud_msg_id" jdbcType="VARCHAR" property="rongcloudMsgId"/>
+        <result column="rongcloud_msg_time" jdbcType="BIGINT" property="rongcloudMsgTime"/>
+        <result column="rongcloud_room_msg_id" jdbcType="VARCHAR" property="rongcloudRoomMsgId"/>
+        <result column="rongcloud_room_msg_time" jdbcType="BIGINT" property="rongcloudRoomMsgTime"/>
+        <result column="chat_group_topic_id" jdbcType="VARCHAR" property="chatGroupTopicId"/>
+        <result column="user_id" jdbcType="BIGINT" property="userId"/>
+        <result column="parent_comment_id" jdbcType="VARCHAR" property="parentCommentId"/>
+        <result column="comment_content" jdbcType="VARCHAR" property="commentContent"/>
+        <result column="comment_content_extend" jdbcType="VARCHAR" property="commentContentExtend"/>
+        <result column="reply_count" jdbcType="INTEGER" property="replyCount"/>
+        <result column="light_count" jdbcType="INTEGER" property="lightCount"/>
+        <result column="black_count" jdbcType="INTEGER" property="blackCount"/>
+        <result column="machine_audit_status" jdbcType="VARCHAR" property="machineAuditStatus"/>
+        <result column="manual_audit_status" jdbcType="VARCHAR" property="manualAuditStatus"/>
+        <result column="final_audit_status" jdbcType="VARCHAR" property="finalAuditStatus"/>
+        <result column="machine_audit_request_id" jdbcType="VARCHAR" property="machineAuditRequestId"/>
+        <result column="create_dt" jdbcType="TIMESTAMP" property="createDt"/>
+        <result column="update_dt" jdbcType="TIMESTAMP" property="updateDt"/>
+        <result column="publish_time" jdbcType="BIGINT" property="publishTime"/>
+        <result column="audit_user_name" jdbcType="VARCHAR" property="auditUserName"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, subject_id, comment_id,
+        rongcloud_msg_id,
+        rongcloud_msg_time,
+        rongcloud_room_msg_id,
+        rongcloud_room_msg_time,
+        chat_group_topic_id,
+        user_id, parent_comment_id, comment_content,comment_content_extend,
+        reply_count,light_count,black_count,machine_audit_status, manual_audit_status, final_audit_status,machine_audit_request_id,
+        create_dt, update_dt,publish_time,audit_user_name
+    </sql>
+
+    <insert id="insert" parameterType="com.hupu.deep.comment.entity.CommentRecordDO">
+        insert into comment_record (subject_id, comment_id, chat_group_topic_id, rongcloud_msg_id,rongcloud_msg_time, user_id, parent_comment_id,
+        comment_content,comment_content_extend,
+        machine_audit_status, manual_audit_status, final_audit_status,publish_time,audit_user_name)
+        values (#{subjectId,jdbcType=VARCHAR}, #{commentId,jdbcType=VARCHAR},
+        #{chatGroupTopicId,jdbcType=VARCHAR},
+        #{rongcloudMsgId,jdbcType=VARCHAR},#{rongcloudMsgTime,jdbcType=BIGINT},
+        #{userId,jdbcType=BIGINT}, #{parentCommentId,jdbcType=VARCHAR},
+        #{commentContent,jdbcType=VARCHAR},#{commentContentExtend,jdbcType=VARCHAR},
+        #{machineAuditStatus,jdbcType=VARCHAR},#{manualAuditStatus,jdbcType=VARCHAR},
+        #{finalAuditStatus,jdbcType=VARCHAR},CONCAT(UNIX_TIMESTAMP(NOW()), RIGHT(NOW(3), 3)),
+        #{auditUserName,jdbcType=VARCHAR})
+    </insert>
+
+
+    <select id="selectByCommentId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from comment_record
+        where comment_id = #{commentId,jdbcType=VARCHAR}
+        and subject_id = #{subjectId,jdbcType=VARCHAR}
+    </select>
+
+    <update id="updateRongcloudGroupRefRoomMsg">
+        update comment_record
+        set rongcloud_room_msg_id = #{rongcloudRoomMsgId,jdbcType=VARCHAR}, rongcloud_room_msg_time = #{rongcloudRoomMsgTime,jdbcType=BIGINT}
+        where subject_id = #{subjectId,jdbcType=VARCHAR} and comment_id = #{commentId,jdbcType=VARCHAR}
+    </update>
+
+    <update id="updateChatGroupTopicId">
+        update comment_record
+        set chat_group_topic_id = #{chatGroupTopicId,jdbcType=VARCHAR}
+        where subject_id = #{subjectId,jdbcType=VARCHAR}
+        and rongcloud_msg_id in
+        <foreach collection="rongcloudMsgIdList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+
+    <update id="updateCommentContentExtend">
+        update comment_record
+        set comment_content_extend = #{commentContentExtend,jdbcType=VARCHAR}
+        where comment_id = #{commentId,jdbcType=VARCHAR}
+        and subject_id = #{subjectId,jdbcType=VARCHAR}
+    </update>
+
+    <select id="selectByRongcloudMsgId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from comment_record
+        where rongcloud_msg_id = #{rongcloudMsgId,jdbcType=VARCHAR}
+        and subject_id = #{subjectId,jdbcType=VARCHAR}
+    </select>
+
+
+
+    <select id="selectByRongcloudMsgIdList" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from comment_record
+        where subject_id = #{subjectId,jdbcType=VARCHAR}
+        and rongcloud_msg_id in
+        <foreach collection="rongcloudMsgIdList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="countBySubjectId" resultType="java.lang.Long">
+        select
+        count(*)
+        from comment_record
+        where subject_id = #{subjectId,jdbcType=VARCHAR}
+        and publish_time &gt; #{publishTime,jdbcType=BIGINT}
+    </select>
+
+    <select id="countUserIdBySubjectId" resultType="java.lang.Long">
+        select
+        count(distinct user_id)
+        from comment_record
+        where subject_id = #{subjectId,jdbcType=VARCHAR}
+        and publish_time &gt; #{publishTime,jdbcType=BIGINT}
+    </select>
+
+    <select id="countBySubjectIdAndChatGroupTopicId" resultType="java.lang.Long">
+        select
+        count(*)
+        from comment_record
+        where subject_id = #{subjectId,jdbcType=VARCHAR}
+        and chat_group_topic_id = #{chatGroupTopicId,jdbcType=VARCHAR}
+        and publish_time &gt; #{publishTime,jdbcType=BIGINT}
+        and final_audit_status != 'DELETE'
+    </select>
+
+    <select id="countUserBySubjectIdAndChatGroupTopicId" resultType="java.lang.Long">
+        select
+        count(distinct user_id)
+        from comment_record
+        where subject_id = #{subjectId,jdbcType=VARCHAR}
+        and chat_group_topic_id = #{chatGroupTopicId,jdbcType=VARCHAR}
+        and publish_time &gt; #{publishTime,jdbcType=BIGINT}
+        and final_audit_status != 'DELETE'
+    </select>
+
+    <select id="selectByCommentIdForUpdate" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from comment_record
+        where comment_id = #{commentId,jdbcType=VARCHAR}
+        and subject_id = #{subjectId,jdbcType=VARCHAR} for update
+    </select>
+
+
+    <update id="updateMachineAuditStatus">
+        update comment_record set machine_audit_status= #{auditStatus,jdbcType=VARCHAR}
+        where comment_id = #{commentId,jdbcType=VARCHAR}
+        and subject_id = #{subjectId,jdbcType=VARCHAR}
+    </update>
+
+    <update id="updateMachineAuditRequestId">
+        update comment_record set machine_audit_request_id= #{machineAuditRequestId,jdbcType=VARCHAR}
+        where comment_id = #{commentId,jdbcType=VARCHAR}
+        and subject_id = #{subjectId,jdbcType=VARCHAR}
+    </update>
+
+
+    <update id="updateManualAuditStatus">
+        update comment_record set manual_audit_status= #{auditStatus,jdbcType=VARCHAR},
+        audit_user_name = #{auditUserName,jdbcType=VARCHAR}
+        where comment_id = #{commentId,jdbcType=VARCHAR}
+        and subject_id = #{subjectId,jdbcType=VARCHAR}
+    </update>
+
+    <update id="updateFinalAuditStatus">
+        update comment_record set final_audit_status= #{auditStatus,jdbcType=VARCHAR}
+        where comment_id = #{commentId,jdbcType=VARCHAR}
+        and subject_id = #{subjectId,jdbcType=VARCHAR}
+    </update>
+
+    <update id="updateByCommentIdSelective" parameterType="com.hupu.deep.comment.entity.CommentRecordDO">
+        update comment_record
+        <set>
+            <if test="subjectId != null">
+                subject_id = #{subjectId,jdbcType=VARCHAR},
+            </if>
+            <if test="commentId != null">
+                comment_id = #{commentId,jdbcType=VARCHAR},
+            </if>
+            <if test="rongcloudMsgId != null">
+                rongcloud_msg_id = #{rongcloudMsgId,jdbcType=VARCHAR},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId,jdbcType=BIGINT},
+            </if>
+            <if test="parentCommentId != null">
+                parent_comment_id = #{parentCommentId,jdbcType=VARCHAR},
+            </if>
+            <if test="commentContent != null">
+                comment_content = #{commentContent,jdbcType=VARCHAR},
+            </if>
+            <if test="commentCount != null">
+                comment_count = #{commentCount,jdbcType=INTEGER},
+            </if>
+            <if test="lightCount != null">
+                light_count = #{lightCount,jdbcType=INTEGER},
+            </if>
+            <if test="blackCount != null">
+                black_count = #{blackCount,jdbcType=INTEGER},
+            </if>
+            <if test="commentStatus != null">
+                comment_status = #{commentStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="auditUserName != null">
+                audit_user_name = #{auditUserName,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where comment_id = #{commentId,jdbcType=VARCHAR}
+        and subject_id = #{subjectId,jdbcType=VARCHAR}
+    </update>
+
+    <update id="updateLightCount">
+        update comment_record set light_count= #{lightCount,jdbcType=INTEGER}
+        where comment_id = #{commentId,jdbcType=VARCHAR}
+        and subject_id = #{subjectId,jdbcType=VARCHAR}
+    </update>
+
+    <update id="updateBlackCount">
+        update comment_record set black_count= #{blackCount,jdbcType=INTEGER}
+        where comment_id = #{commentId,jdbcType=VARCHAR}
+        and subject_id = #{subjectId,jdbcType=VARCHAR}
+    </update>
+
+    <select id="selectByCommentIdList" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from comment_record
+        where subject_id = #{subjectId,jdbcType=VARCHAR}
+        and comment_id in
+        <foreach collection="commentIdList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and final_audit_status != 'DELETE'
+        order by publish_time desc
+    </select>
+
+
+    <select id="selectCommentPageBySubjectId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from comment_record
+        where subject_id = #{subjectId,jdbcType=VARCHAR}
+        and final_audit_status != 'DELETE'
+        order by publish_time desc
+        limit #{startIndex,jdbcType=INTEGER},#{limit,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectPassedCommentBySubjectId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from comment_record
+        where subject_id = #{subjectId,jdbcType=VARCHAR}
+        and final_audit_status = "AUDIT_PASS"
+        order by publish_time desc
+        limit #{startIndex,jdbcType=INTEGER},#{limit,jdbcType=INTEGER}
+    </select>
+
+
+    <select id="countCommentBySubjectId" resultType="java.lang.Integer">
+        select
+        count(*)
+        from comment_record
+        where subject_id = #{subjectId,jdbcType=VARCHAR}
+        and final_audit_status != 'DELETE'
+    </select>
+
+    <select id="countCommentUserBySubjectId" resultType="java.lang.Integer">
+        select
+        count(*)
+        from (
+        select user_id from comment_record
+        where subject_id = #{subjectId,jdbcType=VARCHAR}
+        and final_audit_status != 'DELETE'
+        group by user_id
+        ) as c
+    </select>
+
+    <select id="selectByCursor" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from comment_record
+        where subject_id = #{subjectId,jdbcType=VARCHAR}
+        and publish_time &lt; #{publishTime,jdbcType=BIGINT}
+        <if test="commentStatusList != null and commentStatusList.size() > 0">
+            and final_audit_status in
+            <foreach collection="commentStatusList" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        and final_audit_status != 'DELETE'
+        order by publish_time desc
+        limit #{limit,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectByChatGroupTopicId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from comment_record
+        where subject_id = #{subjectId,jdbcType=VARCHAR}
+        and  chat_group_topic_id = #{chatGroupTopicId,jdbcType=VARCHAR}
+        and publish_time &lt; #{publishTime,jdbcType=BIGINT}
+        <if test="commentStatusList != null and commentStatusList.size() > 0">
+            and final_audit_status in
+            <foreach collection="commentStatusList" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        and final_audit_status != 'DELETE'
+        order by publish_time desc
+        limit #{limit,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectByCC" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from comment_record
+        where subject_id = #{subjectId,jdbcType=VARCHAR}
+        and user_id = #{userId,jdbcType=BIGINT}
+        and final_audit_status != 'DELETE'
+        and publish_time &lt; #{publishTime,jdbcType=BIGINT}
+        order by publish_time desc
+        limit #{limit,jdbcType=INTEGER}
+    </select>
+
+
+    <select id="statsUV" resultType="java.util.Map">
+        SELECT t.comment_content as content ,count(1) as uv from
+        (
+        select
+        comment_content,user_id
+        from comment_record
+        where subject_id = #{subjectId,jdbcType=VARCHAR}
+        and final_audit_status != 'DELETE'
+        and comment_content in
+        <foreach collection="contentList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and publish_time &gt; #{beginTime,jdbcType=BIGINT}
+        and publish_time &lt; #{endTime,jdbcType=BIGINT}
+        group by comment_content,user_id
+        ) t
+        GROUP BY t.comment_content
+    </select>
+
+    <select id="selectUserIdBySubjectId" resultType="java.lang.Long">
+        select
+        user_id
+        from comment_record
+        where subject_id = #{subjectId,jdbcType=VARCHAR}
+        group by user_id
+    </select>
+
+    <select id="selectUserIdBySubjectIdAndPublishTime" resultType="java.lang.Long">
+        select
+        user_id
+        from comment_record
+        where subject_id = #{subjectId,jdbcType=VARCHAR}
+        and publish_time &gt; #{publishTime,jdbcType=BIGINT}
+        group by user_id
+    </select>
+</mapper>
